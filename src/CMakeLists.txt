@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(SentencePieceSample)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Copyright 2018 Google Inc.
 #
@@ -327,6 +328,10 @@ if (NOT SPM_PROTOBUF_PROVIDER STREQUAL "internal")
   install(FILES ${SPM_PROTO_HDRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
+# Install sentencepiece_processor.h header file
+install(FILES sentencepiece_processor.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
 file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/data" data_dir)
 
 if (SPM_BUILD_TEST OR SPM_COVERAGE)
@@ -369,7 +374,7 @@ endif()
 add_executable(sentencepiece_integration_sample sentencepiece_integration_sample.cpp)
 
 # Link the executable with the sentencepiece library
-target_link_libraries(sentencepiece_integration_sample sentencepiece)
+target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
 
 # Install the sentencepiece_integration_sample executable
 install(TARGETS sentencepiece_integration_sample
