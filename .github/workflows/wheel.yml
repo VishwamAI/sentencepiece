@@ -51,16 +51,26 @@ jobs:
       - name: Set Windows environment variables
         if: runner.os == 'Windows'
         run: |
-          echo "INCLUDE=${{github.workspace}}\src" >> $GITHUB_ENV
-          echo "CMAKE_INCLUDE_PATH=${{github.workspace}}\src" >> $GITHUB_ENV
+          echo "INCLUDE=${{github.workspace}}\src;${{github.workspace}}\third_party" >> $GITHUB_ENV
+          echo "CMAKE_INCLUDE_PATH=${{github.workspace}}\src;${{github.workspace}}\third_party" >> $GITHUB_ENV
+
+      - name: Verify sentencepiece_processor.h
+        if: runner.os == 'Windows'
+        run: |
+          if (Test-Path "${{github.workspace}}\src\sentencepiece_processor.h") {
+            echo "sentencepiece_processor.h found in src directory"
+          } else {
+            echo "sentencepiece_processor.h not found in src directory"
+            exit 1
+          }
 
       - name: Build for Windows
         if: runner.os == 'Windows'
         run: |
           dir ${{github.workspace}}\src
-          cmake -A Win32 -B ${{github.workspace}}\build_win32 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}\build\root_win32 -DCMAKE_INCLUDE_PATH=${{github.workspace}}\src
+          cmake -A Win32 -B ${{github.workspace}}\build_win32 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}\build\root_win32 -DCMAKE_INCLUDE_PATH="${{github.workspace}}\src;${{github.workspace}}\third_party"
           cmake --build ${{github.workspace}}\build_win32 --config Release --target install --parallel 8
-          cmake -A x64   -B ${{github.workspace}}\build_amd64 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}\build\root_amd64 -DCMAKE_INCLUDE_PATH=${{github.workspace}}\src
+          cmake -A x64   -B ${{github.workspace}}\build_amd64 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}\build\root_amd64 -DCMAKE_INCLUDE_PATH="${{github.workspace}}\src;${{github.workspace}}\third_party"
           cmake --build ${{github.workspace}}\build_amd64 --config Release --target install --parallel 8
         env:
           INCLUDE: ${{env.INCLUDE}}

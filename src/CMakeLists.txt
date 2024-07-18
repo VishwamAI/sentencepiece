@@ -381,11 +381,17 @@ add_executable(sentencepiece_integration_sample sentencepiece_integration_sample
 # Link the executable with the sentencepiece library
 target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
 
-# Ensure the correct include directory is added for the integration sample
-target_include_directories(sentencepiece_integration_sample PRIVATE
+# Ensure the correct include directories are added for all targets
+include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../third_party
 )
+
+# Additional include directory for Windows
+if(WIN32)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/windows)
+endif()
 
 # Install the sentencepiece_integration_sample executable
 install(TARGETS sentencepiece_integration_sample
@@ -396,8 +402,7 @@ install(FILES sentencepiece_processor.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
-# Ensure the header is found during the build process
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-# Ensure the header is found during the build process
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+# Ensure the header is found during the build process for all targets
+target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_train PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
