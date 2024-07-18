@@ -206,8 +206,6 @@ if(NOT TARGET sentencepiece_integration_sample)
   )
   if(WIN32)
     target_include_directories(sentencepiece_integration_sample PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/src
-      ${CMAKE_CURRENT_BINARY_DIR}/src
       ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
   endif()
