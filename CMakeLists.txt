@@ -51,6 +51,10 @@ if(WIN32)
   set(SPM_ENABLE_SHARED OFF)
   add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN -D_CRT_SECURE_NO_WARNINGS)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  target_include_directories(sentencepiece PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_BINARY_DIR}/src
+  )
 else()
   # Linux and macOS configurations
 endif()
@@ -200,6 +204,12 @@ if(NOT TARGET sentencepiece_integration_sample)
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${PROJECT_BINARY_DIR}
   )
+  if(WIN32)
+    target_include_directories(sentencepiece_integration_sample PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/src
+      ${CMAKE_CURRENT_BINARY_DIR}/src
+    )
+  endif()
 endif()
 
 # Install header files
