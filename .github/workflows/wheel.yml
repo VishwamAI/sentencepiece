@@ -38,14 +38,25 @@ jobs:
         with:
           platforms: arm64
 
-      - name: Verify sentencepiece_processor.h
+      - name: Verify and generate header files
         if: runner.os == 'Windows'
         run: |
-          if (Test-Path "${{github.workspace}}\src\sentencepiece_processor.h") {
-            echo "sentencepiece_processor.h found in src directory"
-          } else {
-            echo "sentencepiece_processor.h not found in src directory"
-            exit 1
+          $headers = @("sentencepiece_processor.h", "sentencepiece_model.pb.h")
+          foreach ($header in $headers) {
+            if (Test-Path "${{github.workspace}}\src\$header") {
+              echo "$header found in src directory"
+            } else {
+              echo "$header not found in src directory, attempting to generate..."
+              cmake -S "${{github.workspace}}" -B "${{github.workspace}}\build" -DSPM_ENABLE_SHARED=OFF
+              cmake --build "${{github.workspace}}\build" --config Release --target sentencepiece-static
+              if (Test-Path "${{github.workspace}}\build\src\$header") {
+                Copy-Item "${{github.workspace}}\build\src\$header" "${{github.workspace}}\src\"
+                echo "$header generated and copied to src directory"
+              } else {
+                echo "Failed to generate $header"
+                exit 1
+              }
+            }
           }
 
       - name: Set Windows environment variables
@@ -54,14 +65,17 @@ jobs:
           echo "INCLUDE=${{github.workspace}}\src;${{github.workspace}}\third_party" >> $GITHUB_ENV
           echo "CMAKE_INCLUDE_PATH=${{github.workspace}}\src;${{github.workspace}}\third_party" >> $GITHUB_ENV
 
-      - name: Verify sentencepiece_model.pb.h
+      - name: Verify header files after generation
         if: runner.os == 'Windows'
         run: |
-          if (Test-Path "${{github.workspace}}\src\sentencepiece_model.pb.h") {
-            echo "sentencepiece_model.pb.h found in src directory"
-          } else {
-            echo "sentencepiece_model.pb.h not found in src directory"
-            exit 1
+          $headers = @("sentencepiece_processor.h", "sentencepiece_model.pb.h")
+          foreach ($header in $headers) {
+            if (Test-Path "${{github.workspace}}\src\$header") {
+              echo "$header verified in src directory"
+            } else {
+              echo "$header still not found in src directory after generation attempt"
+              exit 1
+            }
           }
 
       - name: Build for Windows

@@ -407,12 +407,18 @@ endif()
 install(TARGETS sentencepiece_integration_sample
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Install sentencepiece_processor.h and sentencepiece_model.pb.h header files for all configurations
+# Install sentencepiece_processor.h, sentencepiece_model.pb.h, and other necessary header files for all configurations
 install(FILES
         sentencepiece_processor.h
         sentencepiece_model.pb.h
+        sentencepiece_trainer.h
+        sentencepiece.pb.h
+        ${CMAKE_CURRENT_BINARY_DIR}/sentencepiece_model.pb.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
+
+# Ensure the binary directory is included for finding generated files
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Ensure the headers are found during the build process for all targets
 if(TARGET sentencepiece-static)

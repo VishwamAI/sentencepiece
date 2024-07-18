@@ -236,6 +236,19 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
+# Ensure sentencepiece_model.pb.h is generated before installation
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/sentencepiece_model.pb.h
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/sentencepiece_model.pb.h
+            ${CMAKE_CURRENT_BINARY_DIR}/src/sentencepiece_model.pb.h
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/sentencepiece_model.pb.h
+)
+add_custom_target(generate_sentencepiece_model_pb_h ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/src/sentencepiece_model.pb.h
+)
+add_dependencies(sentencepiece generate_sentencepiece_model_pb_h)
+
 # Add detailed logging for file locations during installation
 message(STATUS "Installing headers to: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
 foreach(header_file
