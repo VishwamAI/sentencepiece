@@ -56,14 +56,18 @@ if(WIN32)
     ${CMAKE_CURRENT_BINARY_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/include
   )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /W4")
+  # Add more detailed error logging for Windows
+  add_definitions(-DSPM_ENABLE_WINDOWS_LOGGING)
 else()
   # Linux and macOS configurations
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra")
 endif()
 
+# Ensure C++17 standard for all platforms
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if((CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND
      CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0) OR
@@ -206,12 +210,18 @@ if(NOT TARGET sentencepiece_integration_sample)
       ${CMAKE_CURRENT_BINARY_DIR}/src
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${PROJECT_BINARY_DIR}
+      ${CMAKE_CURRENT_SOURCE_DIR}/third_party
   )
   if(WIN32)
     target_include_directories(sentencepiece_integration_sample PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/windows
     )
   endif()
+  set_target_properties(sentencepiece_integration_sample PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+  )
 endif()
 
 # Install header files
@@ -220,7 +230,8 @@ install(FILES
     src/sentencepiece_trainer.h
     src/sentencepiece_model.pb.h
     src/sentencepiece.pb.h
-    DESTINATION include)
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
 set(CPACK_SOURCE_GENERATOR "TXZ")
 set(CPACK_GENERATOR "7Z")
