@@ -2,7 +2,7 @@ name: Build Wheels
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, devin/advanced-integration/17282 ]
     tags:
       - 'v*'
   pull_request:
