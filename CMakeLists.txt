@@ -22,6 +22,7 @@ endif()
 
 project(sentencepiece VERSION ${SPM_VERSION} LANGUAGES C CXX)
 
+# We'll keep these global include_directories for now, but use target_include_directories for specific targets
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)
 
@@ -190,16 +191,22 @@ endif()
 add_subdirectory(src)
 add_subdirectory(third_party)
 
-# Add sentencepiece_integration_sample target
-add_executable(sentencepiece_integration_sample src/sentencepiece_integration_sample.cpp)
-target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
-target_include_directories(sentencepiece_integration_sample PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_BINARY_DIR}/src
-)
+if(NOT TARGET sentencepiece_integration_sample)
+  add_executable(sentencepiece_integration_sample src/sentencepiece_integration_sample.cpp)
+  target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
+  target_include_directories(sentencepiece_integration_sample PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/src
+      ${CMAKE_CURRENT_BINARY_DIR}/src
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      ${PROJECT_BINARY_DIR}
+  )
+endif()
 
 # Install header files
-install(FILES src/sentencepiece_processor.h DESTINATION include)
+install(FILES
+    src/sentencepiece_processor.h
+    src/sentencepiece_trainer.h
+    DESTINATION include)
 
 set(CPACK_SOURCE_GENERATOR "TXZ")
 set(CPACK_GENERATOR "7Z")
