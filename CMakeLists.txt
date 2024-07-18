@@ -22,6 +22,9 @@ endif()
 
 project(sentencepiece VERSION ${SPM_VERSION} LANGUAGES C CXX)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)
+
 option(SPM_ENABLE_NFKC_COMPILE "Enables NFKC compile" OFF)
 option(SPM_ENABLE_SHARED "Builds shared libaries in addition to static libraries." ON)
 option(SPM_BUILD_TEST "Builds test binaries." OFF)
@@ -42,9 +45,13 @@ if (SPM_CROSS_SYSTEM_PROCESSOR)
  set(CMAKE_SYSTEM_PROCESSOR ${SPM_CROSS_SYSTEM_PROCESSOR})
 endif()
 
-# Disable shared build on windows
+# Windows-specific configurations
 if(WIN32)
   set(SPM_ENABLE_SHARED OFF)
+  add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN -D_CRT_SECURE_NO_WARNINGS)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+else()
+  # Linux and macOS configurations
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -182,6 +189,17 @@ endif()
 
 add_subdirectory(src)
 add_subdirectory(third_party)
+
+# Add sentencepiece_integration_sample target
+add_executable(sentencepiece_integration_sample src/sentencepiece_integration_sample.cpp)
+target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
+target_include_directories(sentencepiece_integration_sample PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_BINARY_DIR}/src
+)
+
+# Install header files
+install(FILES src/sentencepiece_processor.h DESTINATION include)
 
 set(CPACK_SOURCE_GENERATOR "TXZ")
 set(CPACK_GENERATOR "7Z")
