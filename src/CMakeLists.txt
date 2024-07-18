@@ -383,3 +383,7 @@ target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURR
 # Install the sentencepiece_integration_sample executable
 install(TARGETS sentencepiece_integration_sample
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Install sentencepiece_processor.h header file
+install(FILES sentencepiece_processor.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
