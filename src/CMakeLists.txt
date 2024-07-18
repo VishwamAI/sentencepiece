@@ -384,7 +384,7 @@ add_executable(sentencepiece_integration_sample sentencepiece_integration_sample
 target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
 
 # Ensure the correct include directories are added for all targets
-include_directories(
+target_include_directories(sentencepiece_integration_sample PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../third_party
@@ -392,11 +392,10 @@ include_directories(
 
 # Additional include directory for Windows
 if(WIN32)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/windows)
+    target_include_directories(sentencepiece_integration_sample PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/windows
+    )
 endif()
-
-# Ensure the integration sample can find the header
-target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Install the sentencepiece_integration_sample executable
 install(TARGETS sentencepiece_integration_sample
@@ -412,7 +411,6 @@ target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(sentencepiece_train PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Ensure the header is found during the build process for all targets
-target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(sentencepiece_train PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# Ensure the header is found during the build process for static targets
+target_include_directories(sentencepiece-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_train-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
