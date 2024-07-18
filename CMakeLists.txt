@@ -51,7 +51,7 @@ if(WIN32)
   set(SPM_ENABLE_SHARED OFF)
   add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN -D_CRT_SECURE_NO_WARNINGS)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  target_include_directories(sentencepiece PRIVATE
+  include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}/src
   )
@@ -208,6 +208,7 @@ if(NOT TARGET sentencepiece_integration_sample)
     target_include_directories(sentencepiece_integration_sample PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/src
       ${CMAKE_CURRENT_BINARY_DIR}/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
   endif()
 endif()
@@ -216,6 +217,8 @@ endif()
 install(FILES
     src/sentencepiece_processor.h
     src/sentencepiece_trainer.h
+    src/sentencepiece_model.pb.h
+    src/sentencepiece.pb.h
     DESTINATION include)
 
 set(CPACK_SOURCE_GENERATOR "TXZ")
