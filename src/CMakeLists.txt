@@ -328,9 +328,10 @@ if (NOT SPM_PROTOBUF_PROVIDER STREQUAL "internal")
   install(FILES ${SPM_PROTO_HDRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
-# Install sentencepiece_processor.h header file
+# Ensure sentencepiece_processor.h is installed for all build configurations
 install(FILES sentencepiece_processor.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
 file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/data" data_dir)
 
@@ -375,6 +376,9 @@ add_executable(sentencepiece_integration_sample sentencepiece_integration_sample
 
 # Link the executable with the sentencepiece library
 target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
+
+# Ensure the correct include directory is added for the integration sample
+target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Install the sentencepiece_integration_sample executable
 install(TARGETS sentencepiece_integration_sample
