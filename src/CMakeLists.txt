@@ -407,33 +407,59 @@ endif()
 install(TARGETS sentencepiece_integration_sample
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Install sentencepiece_processor.h header file for all configurations
-install(FILES sentencepiece_processor.h
+# Install sentencepiece_processor.h and sentencepiece_model.pb.h header files for all configurations
+install(FILES
+        sentencepiece_processor.h
+        sentencepiece_model.pb.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
-# Ensure the header is found during the build process for all targets
+# Ensure the headers are found during the build process for all targets
 if(TARGET sentencepiece-static)
-  target_include_directories(sentencepiece-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(sentencepiece-static PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR})
 else()
-  target_include_directories(sentencepiece PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(sentencepiece PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 if(TARGET sentencepiece_train-static)
-  target_include_directories(sentencepiece_train-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(sentencepiece_train-static PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR})
 else()
-  target_include_directories(sentencepiece_train PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(sentencepiece_train PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-target_include_directories(sentencepiece_integration_sample PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_integration_sample PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR})
 
 # Ensure Windows-specific configurations are properly set
 if(WIN32)
   if(TARGET sentencepiece-static)
-    target_compile_definitions(sentencepiece-static PRIVATE NOMINMAX)
+    target_compile_definitions(sentencepiece-static PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
   else()
-    target_compile_definitions(sentencepiece PRIVATE NOMINMAX)
+    target_compile_definitions(sentencepiece PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
   endif()
+
+  if(TARGET sentencepiece_train-static)
+    target_compile_definitions(sentencepiece_train-static PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+  else()
+    target_compile_definitions(sentencepiece_train PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+  endif()
+
+  target_compile_definitions(sentencepiece_integration_sample PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+endif()
+
+# Add logging for debugging purposes
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+message(STATUS "CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
 
   if(TARGET sentencepiece_train-static)
     target_compile_definitions(sentencepiece_train-static PRIVATE NOMINMAX)

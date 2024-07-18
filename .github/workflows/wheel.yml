@@ -54,13 +54,13 @@ jobs:
           echo "INCLUDE=${{github.workspace}}\src;${{github.workspace}}\third_party" >> $GITHUB_ENV
           echo "CMAKE_INCLUDE_PATH=${{github.workspace}}\src;${{github.workspace}}\third_party" >> $GITHUB_ENV
 
-      - name: Verify sentencepiece_processor.h
+      - name: Verify sentencepiece_model.pb.h
         if: runner.os == 'Windows'
         run: |
-          if (Test-Path "${{github.workspace}}\src\sentencepiece_processor.h") {
-            echo "sentencepiece_processor.h found in src directory"
+          if (Test-Path "${{github.workspace}}\src\sentencepiece_model.pb.h") {
+            echo "sentencepiece_model.pb.h found in src directory"
           } else {
-            echo "sentencepiece_processor.h not found in src directory"
+            echo "sentencepiece_model.pb.h not found in src directory"
             exit 1
           }
 
@@ -75,6 +75,22 @@ jobs:
         env:
           INCLUDE: ${{env.INCLUDE}}
           CMAKE_INCLUDE_PATH: ${{env.CMAKE_INCLUDE_PATH}}
+
+      - name: Verify installation
+        if: runner.os == 'Windows'
+        run: |
+          if (Test-Path "${{github.workspace}}\build\root_win32\include\sentencepiece_model.pb.h") {
+            echo "sentencepiece_model.pb.h found in installation directory for Win32"
+          } else {
+            echo "sentencepiece_model.pb.h not found in installation directory for Win32"
+            exit 1
+          }
+          if (Test-Path "${{github.workspace}}\build\root_amd64\include\sentencepiece_model.pb.h") {
+            echo "sentencepiece_model.pb.h found in installation directory for AMD64"
+          } else {
+            echo "sentencepiece_model.pb.h not found in installation directory for AMD64"
+            exit 1
+          }
 
       - name: Build for Mac
         if: runner.os == 'macOS'

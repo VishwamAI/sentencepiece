@@ -55,10 +55,13 @@ if(WIN32)
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party
   )
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /W4")
   # Add more detailed error logging for Windows
   add_definitions(-DSPM_ENABLE_WINDOWS_LOGGING)
+  # Ensure correct installation paths for Windows
+  set(CMAKE_INSTALL_INCLUDEDIR "include")
 else()
   # Linux and macOS configurations
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra")
@@ -232,6 +235,20 @@ install(FILES
     src/sentencepiece.pb.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
+
+# Add detailed logging for file locations during installation
+message(STATUS "Installing headers to: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
+foreach(header_file
+    src/sentencepiece_processor.h
+    src/sentencepiece_trainer.h
+    src/sentencepiece_model.pb.h
+    src/sentencepiece.pb.h)
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${header_file}")
+    message(STATUS "Header file found: ${CMAKE_CURRENT_SOURCE_DIR}/${header_file}")
+  else()
+    message(WARNING "Header file not found: ${CMAKE_CURRENT_SOURCE_DIR}/${header_file}")
+  endif()
+endforeach()
 
 set(CPACK_SOURCE_GENERATOR "TXZ")
 set(CPACK_GENERATOR "7Z")
