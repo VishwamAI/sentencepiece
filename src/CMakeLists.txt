@@ -381,7 +381,11 @@ endif()
 add_executable(sentencepiece_integration_sample sentencepiece_integration_sample.cpp)
 
 # Link the executable with the sentencepiece library
-target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
+if(TARGET sentencepiece-static)
+  target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece-static)
+else()
+  target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
+endif()
 
 # Ensure the correct include directories are added for all targets
 target_include_directories(sentencepiece_integration_sample PRIVATE
@@ -407,8 +411,18 @@ install(FILES sentencepiece_processor.h
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
 # Ensure the header is found during the build process for all targets
-target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(sentencepiece_train PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+if(NOT TARGET sentencepiece-static)
+  target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+else()
+  target_include_directories(sentencepiece-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+if(NOT TARGET sentencepiece_train-static)
+  target_include_directories(sentencepiece_train PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+else()
+  target_include_directories(sentencepiece_train-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Ensure the header is found during the build process for static targets
