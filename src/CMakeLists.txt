@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.22)
+project(SentencePieceSample)
+
 # Copyright 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -310,15 +313,17 @@ if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 else()
-install(TARGETS ${SPM_INSTALLTARGETS}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  install(TARGETS ${SPM_INSTALLTARGETS}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
+# Install main SentencePiece header files
 install(FILES sentencepiece_trainer.h sentencepiece_processor.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 if (NOT SPM_PROTOBUF_PROVIDER STREQUAL "internal")
+  # Install protobuf header files if using external protobuf
   install(FILES ${SPM_PROTO_HDRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
@@ -359,3 +364,13 @@ if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
   set_xcode_property(spm_train PRODUCT_BUNDLE_IDENTIFIER "SentencePiece" All)
   set_xcode_property(spm_export_vocab PRODUCT_BUNDLE_IDENTIFIER "SentencePiece" All)
 endif()
+
+# Add the sentencepiece_integration_sample.cpp to the build process
+add_executable(sentencepiece_integration_sample sentencepiece_integration_sample.cpp)
+
+# Link the executable with the sentencepiece library
+target_link_libraries(sentencepiece_integration_sample sentencepiece)
+
+# Install the sentencepiece_integration_sample executable
+install(TARGETS sentencepiece_integration_sample
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
