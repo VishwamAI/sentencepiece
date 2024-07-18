@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.22)
 project(SentencePieceSample)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+if(WIN32)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 # Copyright 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -378,7 +382,10 @@ add_executable(sentencepiece_integration_sample sentencepiece_integration_sample
 target_link_libraries(sentencepiece_integration_sample PRIVATE sentencepiece)
 
 # Ensure the correct include directory is added for the integration sample
-target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_integration_sample PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 # Install the sentencepiece_integration_sample executable
 install(TARGETS sentencepiece_integration_sample
@@ -386,4 +393,8 @@ install(TARGETS sentencepiece_integration_sample
 
 # Install sentencepiece_processor.h header file
 install(FILES sentencepiece_processor.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
+
+# Ensure the header is found during the build process
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})

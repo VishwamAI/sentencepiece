@@ -48,6 +48,7 @@ jobs:
           cmake --build ${{github.workspace}}/build_amd64 --config Release --target install --parallel 8
         env:
           INCLUDE: ${{github.workspace}}/src
+          CMAKE_INCLUDE_PATH: ${{github.workspace}}/src
 
       - name: Build for Mac
         if: runner.os == 'macOS'
