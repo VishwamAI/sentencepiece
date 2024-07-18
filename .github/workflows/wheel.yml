@@ -42,16 +42,23 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           dir ${{github.workspace}}\src
-          copy ${{github.workspace}}\src\sentencepiece_processor.h ${{github.workspace}}\
-          echo "Content of workspace root:"
-          dir ${{github.workspace}}
-          cmake -A Win32 -B ${{github.workspace}}/build_win32 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/build/root_win32 -DCMAKE_INCLUDE_PATH=${{github.workspace}}
+          cmake -A Win32 -B ${{github.workspace}}/build_win32 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/build/root_win32 -DCMAKE_INCLUDE_PATH=${{github.workspace}}/src
           cmake --build ${{github.workspace}}/build_win32 --config Release --target install --parallel 8
-          cmake -A x64   -B ${{github.workspace}}/build_amd64 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/build/root_amd64 -DCMAKE_INCLUDE_PATH=${{github.workspace}}
+          cmake -A x64   -B ${{github.workspace}}/build_amd64 -DSPM_ENABLE_SHARED=OFF -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/build/root_amd64 -DCMAKE_INCLUDE_PATH=${{github.workspace}}/src
           cmake --build ${{github.workspace}}/build_amd64 --config Release --target install --parallel 8
         env:
-          INCLUDE: ${{github.workspace}}
-          CMAKE_INCLUDE_PATH: ${{github.workspace}}
+          INCLUDE: ${{github.workspace}}/src
+          CMAKE_INCLUDE_PATH: ${{github.workspace}}/src
+
+      - name: Verify sentencepiece_processor.h
+        if: runner.os == 'Windows'
+        run: |
+          if (Test-Path "${{github.workspace}}\src\sentencepiece_processor.h") {
+            echo "sentencepiece_processor.h found in src directory"
+          } else {
+            echo "sentencepiece_processor.h not found in src directory"
+            exit 1
+          }
 
       - name: Build for Mac
         if: runner.os == 'macOS'
