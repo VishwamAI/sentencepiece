@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.22)
 project(SentencePieceSample)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party)
 
 if(WIN32)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -393,6 +395,9 @@ if(WIN32)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/windows)
 endif()
 
+# Ensure the integration sample can find the header
+target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 # Install the sentencepiece_integration_sample executable
 install(TARGETS sentencepiece_integration_sample
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -401,6 +406,11 @@ install(TARGETS sentencepiece_integration_sample
 install(FILES sentencepiece_processor.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
+
+# Ensure the header is found during the build process for all targets
+target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_train PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Ensure the header is found during the build process for all targets
 target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
