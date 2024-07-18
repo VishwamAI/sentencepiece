@@ -38,6 +38,16 @@ jobs:
         with:
           platforms: arm64
 
+      - name: Verify sentencepiece_processor.h
+        if: runner.os == 'Windows'
+        run: |
+          if (Test-Path "${{github.workspace}}\src\sentencepiece_processor.h") {
+            echo "sentencepiece_processor.h found in src directory"
+          } else {
+            echo "sentencepiece_processor.h not found in src directory"
+            exit 1
+          }
+
       - name: Build for Windows
         if: runner.os == 'Windows'
         run: |
@@ -49,16 +59,6 @@ jobs:
         env:
           INCLUDE: ${{github.workspace}}/src
           CMAKE_INCLUDE_PATH: ${{github.workspace}}/src
-
-      - name: Verify sentencepiece_processor.h
-        if: runner.os == 'Windows'
-        run: |
-          if (Test-Path "${{github.workspace}}\src\sentencepiece_processor.h") {
-            echo "sentencepiece_processor.h found in src directory"
-          } else {
-            echo "sentencepiece_processor.h not found in src directory"
-            exit 1
-          }
 
       - name: Build for Mac
         if: runner.os == 'macOS'

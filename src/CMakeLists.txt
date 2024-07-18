@@ -391,10 +391,13 @@ target_include_directories(sentencepiece_integration_sample PRIVATE
 install(TARGETS sentencepiece_integration_sample
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Install sentencepiece_processor.h header file
+# Install sentencepiece_processor.h header file for all configurations
 install(FILES sentencepiece_processor.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
+
+# Ensure the header is found during the build process
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Ensure the header is found during the build process
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
