@@ -6,6 +6,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party)
 
 if(WIN32)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/windows)
+  add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN -D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 # Copyright 2018 Google Inc.
@@ -411,20 +413,33 @@ install(FILES sentencepiece_processor.h
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
 # Ensure the header is found during the build process for all targets
-if(NOT TARGET sentencepiece-static)
-  target_include_directories(sentencepiece PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+if(TARGET sentencepiece-static)
+  target_include_directories(sentencepiece-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 else()
-  target_include_directories(sentencepiece-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(sentencepiece PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-if(NOT TARGET sentencepiece_train-static)
-  target_include_directories(sentencepiece_train PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+if(TARGET sentencepiece_train-static)
+  target_include_directories(sentencepiece_train-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 else()
-  target_include_directories(sentencepiece_train-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(sentencepiece_train PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-target_include_directories(sentencepiece_integration_sample PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(sentencepiece_integration_sample PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Ensure the header is found during the build process for static targets
-target_include_directories(sentencepiece-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(sentencepiece_train-static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# Ensure Windows-specific configurations are properly set
+if(WIN32)
+  if(TARGET sentencepiece-static)
+    target_compile_definitions(sentencepiece-static PRIVATE NOMINMAX)
+  else()
+    target_compile_definitions(sentencepiece PRIVATE NOMINMAX)
+  endif()
+
+  if(TARGET sentencepiece_train-static)
+    target_compile_definitions(sentencepiece_train-static PRIVATE NOMINMAX)
+  else()
+    target_compile_definitions(sentencepiece_train PRIVATE NOMINMAX)
+  endif()
+
+  target_compile_definitions(sentencepiece_integration_sample PRIVATE NOMINMAX)
+endif()
